@@ -425,7 +425,7 @@ namespace Filters
 
         public void Dictionaries()
         {
-            Download = new int[4] { 0, 0, 0, 0 };
+            Download = new int[5] { 0, 0, 0, 0, 0 };
             SolsDict = new Dictionary<string, List<string>>();
             NSNDict = new Dictionary<string, List<string>>();
 
@@ -435,23 +435,25 @@ namespace Filters
             string line;
             string[] strArray;
             List<String> tempList, tempList2;
-            int [] Notcounts = new int[4] {0,0,0,0};
+            int [] Notcounts = new int[5] {0,0,0,0,0};
             while (!reader1.EndOfStream)
             {                
                 tempList = new List<string>();
                 line = reader1.ReadLine();
                 strArray = line.Split(' ');
-                int levelint;
+                int levelint=0;
                 
                     String Key = strArray[0].Substring(0, strArray[0].Length - 13); //SOLICITATION
                     String level = Key.Substring(3, 1);
-                    if (level.Equals("4") || level.Equals("5") || level.Equals("7") || level.Equals("8"))
+                    if (level.Equals("4") || level.Equals("5") || level.Equals("7") || level.Equals("8") || level.Equals("F"))
                     {
-                        levelint = int.Parse(level);
-                        
+                        if(!level.Equals("F"))
+                        {
+                            levelint = int.Parse(level);
+
                             if (levelint <= 5)
                             {
-                                levelint=levelint - 4;
+                                levelint = levelint - 4;
                                 Download[levelint] += 1;
                             }
                             else
@@ -459,6 +461,13 @@ namespace Filters
                                 levelint = levelint - 5;
                                 Download[levelint] += 1;
                             }
+
+                        }else
+                        {
+                            levelint = 4;
+                            Download[levelint] += 1;
+                        }
+                        
                             try
                             {
                                 String DueDate = strArray[36].Substring(10, 8);
