@@ -21,7 +21,7 @@ namespace Filters
             InitializeComponent();            
         }
 
-        int [] Download;
+        int [] Download, FF;
         Dictionary<string, List<string>> SolsDict, NSNDict;
         String route, intxt, astxt, folder, file, dPath;        
         List<String> founds;
@@ -183,7 +183,7 @@ namespace Filters
             {
                 DateTime time = dTimePick.Value;
                 continuebuttom(time);
-                Dictionaries();                
+                Dictionaries();
             }
             btn_Continue.Enabled = false;
             dgvResults.DataSource = new DataTable();
@@ -426,6 +426,7 @@ namespace Filters
         public void Dictionaries()
         {
             Download = new int[5] { 0, 0, 0, 0, 0 };
+            FF = new int[5] { 0, 0, 0, 0, 0 };
             SolsDict = new Dictionary<string, List<string>>();
             NSNDict = new Dictionary<string, List<string>>();
 
@@ -442,6 +443,7 @@ namespace Filters
                 line = reader1.ReadLine();
                 strArray = line.Split(' ');
                 int levelint=0;
+                String Group="";
                 
                     String Key = strArray[0].Substring(0, strArray[0].Length - 13); //SOLICITATION
                     String level = Key.Substring(3, 1);
@@ -449,6 +451,7 @@ namespace Filters
                     {
                         if(!level.Equals("F"))
                         {
+                            Group = "SPE "+level;
                             levelint = int.Parse(level);
 
                             if (levelint <= 5)
@@ -464,10 +467,11 @@ namespace Filters
 
                         }else
                         {
+                            Group = "SPE FA";
                             levelint = 4;
                             Download[levelint] += 1;
                         }
-                        
+
                             try
                             {
                                 String DueDate = strArray[36].Substring(10, 8);
@@ -482,37 +486,60 @@ namespace Filters
                                     Description = Description + " " + strArray[i];
                                 }
 
-                                if (!Description.Contains("FOAM SEGMENT") && !Description.Contains("FILLER BOID") && !Description.Contains("INSTRUMENTATION HARDWARE") && !Description.Contains("COMMERCIAL HARDWARE") && !Description.Contains("EMERGENCY BUY"))
+                                DateTime realDue,now;
+                                now = DateTime.Now.Date; //dd-MM-yy
+                                realDue = Convert.ToDateTime(DueDate); //MM-dd-yy
+                                int day=realDue.Day;
+                                int month = realDue.Month;
+                                int year = realDue.Year;
+                                realDue = new DateTime(year, day, month);
+                                bool sw = true;
+
+                                if (!Description.Contains("FOAM SEGMENT") && !Description.Contains("FILLER, VOID") && !Description.Contains("INSTRUMENTATION HARDWARE") && !Description.Contains("COMMERCIAL HARDWARE") && !Description.Contains("EMERGENCY BUY") && now < realDue && !Key.Substring(8, 1).Equals("X") && (Unit.Equals("EA") || (Unit.Equals("HD") && int.Parse(Qty) < 100)))
                                 {
-                                    tempList.Add(DueDate);  //DUE DATE
-                                    tempList.Add(Requisition); //REQUISITION
-                                    tempList.Add(NSN); //NSN
-                                    tempList.Add(Description); //DESCRIPTION
-                                    tempList.Add(Unit); //UNIT
-                                    tempList.Add(Qty); //QUANTITY
+                                    if (Group.Equals("SPE 7") && !NSN.Substring(0,2).Equals("59"))
+                                    {
+                                        sw = false;
+                                    }
+                                    if (sw)
+                                    {
+                                        FF[levelint] += 1;
+                                        tempList.Add(Group); //GROUP
+                                        tempList.Add(DueDate);  //DUE DATE
+                                        tempList.Add(Requisition); //REQUISITION
+                                        tempList.Add(NSN); //NSN
+                                        tempList.Add(Description); //DESCRIPTION
+                                        tempList.Add(Unit); //UNIT
+                                        tempList.Add(Qty); //QUANTITY
 
-                                    if (!SolsDict.ContainsKey(Key))
-                                    {
-                                        SolsDict.Add(Key, tempList);
-                                    }
-                                    else
-                                    {
-                                        SolsDict[Key].Add(Requisition);
-                                        SolsDict[Key].Add(NSN);
-                                        SolsDict[Key].Add(Unit);
-                                        SolsDict[Key].Add(Qty);
-                                    }
+                                        if (!SolsDict.ContainsKey(Key))
+                                        {
+                                            SolsDict.Add(Key, tempList);
+                                        }
+                                        else
+                                        {
+                                            SolsDict[Key].Add(Requisition);
+                                            SolsDict[Key].Add(NSN);
+                                            SolsDict[Key].Add(Unit);
+                                            SolsDict[Key].Add(Qty);
+                                        }
 
-                                    tempList2 = new List<string>();
-                                    tempList2.Add(Key);
-                                    if (!NSNDict.ContainsKey(NSN))
-                                    {
-                                        NSNDict.Add(NSN, tempList2);
-                                    }
-                                    else
-                                    {
-                                        NSNDict[NSN].Add(Key);
-                                    }
+                                        tempList2 = new List<string>();
+                                        tempList2.Add(Key);
+                                        if (!NSNDict.ContainsKey(NSN))
+                                        {
+                                            NSNDict.Add(NSN, tempList2);
+                                        }
+                                        else
+                                        {
+                                            NSNDict[NSN].Add(Key);
+                                        }  
+                                    }                                    
+                                }
+                                else
+                                {
+                                    int a;
+                                    a = 1;
                                 }
                         }
                            catch (Exception)
@@ -523,7 +550,7 @@ namespace Filters
                     }                    
               }
 
-            MessageBox.Show("No contados: " + "G4: "+ Notcounts[0] + "," + "G5: " + Notcounts[1] + "," + "G7: " + Notcounts[2] + "," + "G8: "+ Notcounts[3]);
+            MessageBox.Show("No contados: " + "G4: " + Notcounts[0] + "," + "G5: " + Notcounts[1] + "," + "G7: " + Notcounts[2] + "," + "G8: " + Notcounts[3] + "," + "FA: " + Notcounts[4]);
             while (!reader2.EndOfStream)
             {
                 tempList = new List<string>();
