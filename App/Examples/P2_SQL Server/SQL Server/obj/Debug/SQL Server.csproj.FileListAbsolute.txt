@@ -1,0 +1,18 @@
+c:\users\a8\documents\visual studio 2013\Projects\SQL Server\SQL Server\bin\Debug\SQL Server.exe.config
+c:\users\a8\documents\visual studio 2013\Projects\SQL Server\SQL Server\bin\Debug\SQL Server.exe
+c:\users\a8\documents\visual studio 2013\Projects\SQL Server\SQL Server\bin\Debug\SQL Server.pdb
+c:\users\a8\documents\visual studio 2013\Projects\SQL Server\SQL Server\obj\Debug\SQL Server.csprojResolveAssemblyReference.cache
+c:\users\a8\documents\visual studio 2013\Projects\SQL Server\SQL Server\obj\Debug\SQL_Server.Properties.Resources.resources
+c:\users\a8\documents\visual studio 2013\Projects\SQL Server\SQL Server\obj\Debug\SQL Server.csproj.GenerateResource.Cache
+c:\users\a8\documents\visual studio 2013\Projects\SQL Server\SQL Server\obj\Debug\SQL Server.exe
+c:\users\a8\documents\visual studio 2013\Projects\SQL Server\SQL Server\obj\Debug\SQL Server.pdb
+c:\users\a8\documents\visual studio 2013\Projects\SQL Server\SQL Server\obj\Debug\SQL_Server.Login.resources
+c:\users\a8\documents\visual studio 2013\Projects\SQL Server\SQL Server\obj\Debug\SQL_Server.NewDBs.resources
+C:\Users\A8\documents\visual studio 2013\Projects\SQL Server\SQL Server\obj\Debug\SQL_Server.NewElements.resources
+C:\Users\A8\documents\visual studio 2013\Projects\SQL Server\SQL Server\obj\Debug\SQL_Server.Query.resources
+C:\Users\A8\documents\visual studio 2013\Projects\SQL Server\SQL Server\obj\Debug\SQL Server.csproj.ResolveComReference.cache
+C:\Users\A8\documents\visual studio 2013\Projects\SQL Server\SQL Server\obj\Debug\SQL_Server.Merge.resources
+C:\Users\A8\documents\visual studio 2013\Projects\SQL Server\SQL Server\obj\Debug\SQL_Server.SQLSERVER.resources
+C:\Users\Altum Aerospace\Documents\Andrés Lastra\Altum\Filtros\App\Examples\P2_SQL Server\SQL Server\obj\Debug\SQL Server.csprojResolveAssemblyReference.cache
+C:\Users\Altum Aerospace\Documents\Andrés Lastra\Altum\Filtros\App\Examples\P2_SQL Server\SQL Server\obj\Debug\SQL Server.exe
+C:\Users\Altum Aerospace\Documents\Andrés Lastra\Altum\Filtros\App\Examples\P2_SQL Server\SQL Server\obj\Debug\SQL Server.pdb

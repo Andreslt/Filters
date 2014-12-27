@@ -1,0 +1,20 @@
+= Detailed Report =
+Download
+First Filter
+PartBase
+IDPO
+QPL
+QML
+QSLD
+QSLM
+QTSL
+PLT
+LS
+MC
+CSI
+= Day Report =
+Date
+Group
+NSN
+Solicitation
+Worker
