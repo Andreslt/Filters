@@ -46,21 +46,12 @@
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.btnConsultar = new System.Windows.Forms.Button();
             this.dgvResults = new System.Windows.Forms.DataGridView();
-            this.tabConsultar = new System.Windows.Forms.TabPage();
-            this.monthCalendar1 = new System.Windows.Forms.MonthCalendar();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.label_Ingresar = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.label_ConsultarPor = new System.Windows.Forms.Label();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabFiltrar.SuspendLayout();
             this.tabResults.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvResults)).BeginInit();
-            this.tabConsultar.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // btn_folderRoute
@@ -154,7 +145,6 @@
             // 
             this.tabControl1.Controls.Add(this.tabFiltrar);
             this.tabControl1.Controls.Add(this.tabResults);
-            this.tabControl1.Controls.Add(this.tabConsultar);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
@@ -188,7 +178,7 @@
             this.tabResults.Controls.Add(this.dgvResults);
             this.tabResults.Location = new System.Drawing.Point(4, 22);
             this.tabResults.Name = "tabResults";
-            this.tabResults.Size = new System.Drawing.Size(576, 186);
+            this.tabResults.Size = new System.Drawing.Size(576, 185);
             this.tabResults.TabIndex = 2;
             this.tabResults.Text = "Resultados";
             this.tabResults.UseVisualStyleBackColor = true;
@@ -246,76 +236,6 @@
             this.dgvResults.TabIndex = 0;
             this.dgvResults.DataSourceChanged += new System.EventHandler(this.dgvResults_DataSourceChanged);
             // 
-            // tabConsultar
-            // 
-            this.tabConsultar.Controls.Add(this.monthCalendar1);
-            this.tabConsultar.Controls.Add(this.textBox2);
-            this.tabConsultar.Controls.Add(this.label_Ingresar);
-            this.tabConsultar.Controls.Add(this.comboBox1);
-            this.tabConsultar.Controls.Add(this.label_ConsultarPor);
-            this.tabConsultar.Controls.Add(this.dataGridView1);
-            this.tabConsultar.Location = new System.Drawing.Point(4, 22);
-            this.tabConsultar.Name = "tabConsultar";
-            this.tabConsultar.Padding = new System.Windows.Forms.Padding(3);
-            this.tabConsultar.Size = new System.Drawing.Size(576, 186);
-            this.tabConsultar.TabIndex = 1;
-            this.tabConsultar.Text = "Consultar";
-            this.tabConsultar.UseVisualStyleBackColor = true;
-            // 
-            // monthCalendar1
-            // 
-            this.monthCalendar1.Location = new System.Drawing.Point(14, 106);
-            this.monthCalendar1.Name = "monthCalendar1";
-            this.monthCalendar1.TabIndex = 5;
-            // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(84, 74);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(121, 20);
-            this.textBox2.TabIndex = 4;
-            // 
-            // label_Ingresar
-            // 
-            this.label_Ingresar.AutoSize = true;
-            this.label_Ingresar.Location = new System.Drawing.Point(11, 74);
-            this.label_Ingresar.Name = "label_Ingresar";
-            this.label_Ingresar.Size = new System.Drawing.Size(45, 13);
-            this.label_Ingresar.TabIndex = 3;
-            this.label_Ingresar.Text = "Ingresar";
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
-            "Fecha",
-            "No. Solicitud",
-            "No. Parte",
-            "Asistente",
-            "Todo"});
-            this.comboBox1.Location = new System.Drawing.Point(84, 32);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(121, 21);
-            this.comboBox1.TabIndex = 2;
-            // 
-            // label_ConsultarPor
-            // 
-            this.label_ConsultarPor.AutoSize = true;
-            this.label_ConsultarPor.Location = new System.Drawing.Point(8, 32);
-            this.label_ConsultarPor.Name = "label_ConsultarPor";
-            this.label_ConsultarPor.Size = new System.Drawing.Size(69, 13);
-            this.label_ConsultarPor.TabIndex = 1;
-            this.label_ConsultarPor.Text = "Consultar por";
-            // 
-            // dataGridView1
-            // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(247, 32);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(285, 236);
-            this.dataGridView1.TabIndex = 0;
-            this.dataGridView1.Visible = false;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -334,9 +254,6 @@
             this.tabResults.ResumeLayout(false);
             this.tabResults.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvResults)).EndInit();
-            this.tabConsultar.ResumeLayout(false);
-            this.tabConsultar.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -354,13 +271,6 @@
         private System.Windows.Forms.RadioButton rB1;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabFiltrar;
-        private System.Windows.Forms.TabPage tabConsultar;
-        private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.Label label_ConsultarPor;
-        private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.Label label_Ingresar;
-        private System.Windows.Forms.MonthCalendar monthCalendar1;
-        private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.TabPage tabResults;
         private System.Windows.Forms.DataGridView dgvResults;
         private System.Windows.Forms.ComboBox comboBox2;

@@ -23,6 +23,7 @@ namespace Filters
 
         int [] Download, FF;
         Dictionary<string, List<string>> SolsDict, NSNDict;
+        Dictionary<string, int> Filtered;
         String route, intxt, astxt, folder, file, dPath;        
         List<String> founds;
         List<String> Cwords = new List<string>();
@@ -39,8 +40,7 @@ namespace Filters
             {
                 var line = reader.ReadLine();
                 Cwords.Add(line);
-            }
-
+            }            
             SearchInFolder();
             textBox1.Text = route;
             if (!textBox1.Text.Equals(""))
@@ -135,7 +135,7 @@ namespace Filters
                 int wkr = 0;bool workFile=true;
                 foreach (FileInfo fl in files)
                 {
-                    if(!fl.Name.Contains(".txt"))
+                    if(fl.Name.Contains(".pdf"))
                     {
                         if (rB2.Checked)
                         {
@@ -160,13 +160,6 @@ namespace Filters
                             wkr++;
                         }
                     }
-                    else
-                    {
-                        if (fl.Name.Contains("in"))
-                            intxt = fl.FullName;
-                        else
-                            astxt = fl.FullName;
-                    }                
                 }
             }
             catch (Exception e)
@@ -182,8 +175,8 @@ namespace Filters
             if(result == DialogResult.OK)
             {
                 DateTime time = dTimePick.Value;
-                continuebuttom(time);
                 Dictionaries();
+                continuebuttom(time);                
             }
             btn_Continue.Enabled = false;
             dgvResults.DataSource = new DataTable();
@@ -370,8 +363,7 @@ namespace Filters
                 row["NSN"] = "XXXX";
                 row["Solicitation"] = fl.Name.Substring(0,fl.Name.IndexOf("."));
                 row["Worker"] = Worker;
-                dt.Rows.Add(row);
-                
+                dt.Rows.Add(row);             
             }
         }
 
@@ -429,6 +421,21 @@ namespace Filters
             FF = new int[5] { 0, 0, 0, 0, 0 };
             SolsDict = new Dictionary<string, List<string>>();
             NSNDict = new Dictionary<string, List<string>>();
+            Filtered = new Dictionary<string, int>();
+
+            DirectoryInfo folders = new DirectoryInfo(folder);
+            FileInfo[] files = folders.GetFiles();
+
+            foreach (FileInfo fl in files)
+            {
+                if (fl.Name.Contains(".txt"))
+                {
+                    if (fl.Name.Contains("in"))
+                        intxt = fl.FullName;
+                    else
+                        astxt = fl.FullName;
+                }
+            }
 
             var reader1 = new StreamReader(File.OpenRead(intxt)); // SOLICITATIONS
             var reader2 = new StreamReader(File.OpenRead(astxt)); // NSN
@@ -446,6 +453,10 @@ namespace Filters
                 String Group="";
                 
                     String Key = strArray[0].Substring(0, strArray[0].Length - 13); //SOLICITATION
+                    if (Key.Equals("SPE4A515Q0618"))
+                    {
+                        int a;
+                    }
                     String level = Key.Substring(3, 1);
                     if (level.Equals("4") || level.Equals("5") || level.Equals("7") || level.Equals("8") || level.Equals("F"))
                     {
@@ -474,77 +485,174 @@ namespace Filters
 
                             try
                             {
-                                String DueDate = strArray[36].Substring(10, 8);
-                                String Requisition = strArray[36].Substring(0, 10);
                                 String NSN = strArray[0].Substring(13, 13);
-                                String Unit = strArray[38].Substring(7, 2);
-                                String Qty = strArray[38].Substring(0, 7);
-                                String Description = strArray[38].Substring(9);
+                                String DueDate="", Requisition="", Unit="", Qty="", Description="";
+                                int j = 1, j2 = 1;
+                                while(j2!=3)
+                                {                                    
+                                    if(!strArray[j].Equals(""))
+                                    {
+                                        if (j2==1)
+                                        {
+                                            DueDate = strArray[j].Substring(10, 8);
+                                            Requisition = strArray[j].Substring(0, 10);
+                                        }
+                                        else
+                                        {
+                                            Unit = strArray[j].Substring(7, 2);
+                                            Qty = strArray[j].Substring(0, 7);
+                                            Description = strArray[j].Substring(9);                                            
+                                        }
+                                        j2 += 1;
+                                    }
+                                    j += 1;                                    
+                                }
+                                
 
-                                for (int i = 39; i <= strArray.Length - 3; i++)
+                                for (int i = j; i <= strArray.Length - 3; i++)
                                 {
-                                    Description = Description + " " + strArray[i];
+                                    if (!strArray[i].Equals(""))
+                                    {
+                                        Description = Description + " " + strArray[i]; 
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }                                    
                                 }
 
                                 DateTime realDue,now;
-                                now = DateTime.Now.Date; //dd-MM-yy
-                                realDue = Convert.ToDateTime(DueDate); //MM-dd-yy
-                                int day=realDue.Day;
-                                int month = realDue.Month;
-                                int year = realDue.Year;
-                                realDue = new DateTime(year, day, month);
-                                bool sw = true;
+                                now = Convert.ToDateTime("22/12/2014");
+                                //now = DateTime.Now.Date; //dd-MM-yy MODIFICAR A ESTE VALOR POSTERIORMENTE!!!
+                                String[] datefix = DueDate.Split('/');//MM-dd-yy
+                                int day = int.Parse(datefix[1]);
+                                int month = int.Parse(datefix[0]);
+                                int year = int.Parse("20"+datefix[2]);
+                                realDue = new DateTime(year, month, day);
+                                bool sw = false;
+                                String errorfound="";
 
-                                if (!Description.Contains("FOAM SEGMENT") && !Description.Contains("FILLER, VOID") && !Description.Contains("INSTRUMENTATION HARDWARE") && !Description.Contains("COMMERCIAL HARDWARE") && !Description.Contains("EMERGENCY BUY") && now < realDue && !Key.Substring(8, 1).Equals("X") && (Unit.Equals("EA") || (Unit.Equals("HD") && int.Parse(Qty) < 100)))
+                                if (!Description.Contains("FOAM SEGMENT"))
                                 {
-                                    if (Group.Equals("SPE 7") && !NSN.Substring(0,2).Equals("59"))
+                                    if (!Description.Contains("FILLER, VOID"))
                                     {
-                                        sw = false;
+                                        if (!Description.Contains("INSTRUMENTATION HARDWARE"))
+                                        {
+                                            if (!Description.Contains("COMMERCIAL HARDWARE"))
+                                            {
+                                                if (!Description.Contains("EMERGENCY BUY"))
+                                                {
+                                                    if (now < realDue)
+                                                    {
+                                                        if (!Key.Substring(8, 1).Equals("X"))
+                                                        {
+                                                            if (Unit.Equals("EA") || (Unit.Equals("HD") && int.Parse(Qty) < 100))
+                                                            {
+                                                                if (Group.Equals("SPE FA"))
+                                                                {
+                                                                    double a = double.Parse(NSN);
+                                                                }
+                                                                sw = true;
+                                                                 if (Group.Equals("SPE 7"))
+                                                                 {
+                                                                    if (NSN.Substring(0,2).Equals("59"))
+                                                                    {
+                                                                        sw = false;
+                                                                    }                                        
+                                                                 }
+
+                                                                if (sw)
+                                                                {
+                                                                    FF[levelint] += 1;
+                                                                    tempList.Add(Group); //GROUP
+                                                                    tempList.Add(DueDate);  //DUE DATE
+                                                                    tempList.Add(Requisition); //REQUISITION
+                                                                    tempList.Add(NSN); //NSN
+                                                                    tempList.Add(Description); //DESCRIPTION
+                                                                    tempList.Add(Unit); //UNIT
+                                                                    tempList.Add(Qty); //QUANTITY
+
+                                                                    if (!SolsDict.ContainsKey(Key))
+                                                                    {
+                                                                        SolsDict.Add(Key, tempList);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        SolsDict[Key].Add(Requisition);
+                                                                        SolsDict[Key].Add(NSN);
+                                                                        SolsDict[Key].Add(Unit);
+                                                                        SolsDict[Key].Add(Qty);
+                                                                    }
+
+                                                                    tempList2 = new List<string>();
+                                                                    tempList2.Add(Key);
+                                                                    if (!NSNDict.ContainsKey(NSN))
+                                                                    {
+                                                                        NSNDict.Add(NSN, tempList2);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        NSNDict[NSN].Add(Key);
+                                                                    }
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                errorfound = "UNITS";
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            errorfound = "X's";
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        errorfound = "DUE";
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    errorfound = "EMERGENCY BUY";
+                                                }
+                                            }
+                                            else
+                                            {
+                                                errorfound = "COMMERCIAL HARDWARE";
+                                            }
+                                        }
+                                        else
+                                        {
+                                            errorfound = "INSTRUMENTATION HARDWARE";  
+                                        }
                                     }
-                                    if (sw)
+                                    else
                                     {
-                                        FF[levelint] += 1;
-                                        tempList.Add(Group); //GROUP
-                                        tempList.Add(DueDate);  //DUE DATE
-                                        tempList.Add(Requisition); //REQUISITION
-                                        tempList.Add(NSN); //NSN
-                                        tempList.Add(Description); //DESCRIPTION
-                                        tempList.Add(Unit); //UNIT
-                                        tempList.Add(Qty); //QUANTITY
-
-                                        if (!SolsDict.ContainsKey(Key))
-                                        {
-                                            SolsDict.Add(Key, tempList);
-                                        }
-                                        else
-                                        {
-                                            SolsDict[Key].Add(Requisition);
-                                            SolsDict[Key].Add(NSN);
-                                            SolsDict[Key].Add(Unit);
-                                            SolsDict[Key].Add(Qty);
-                                        }
-
-                                        tempList2 = new List<string>();
-                                        tempList2.Add(Key);
-                                        if (!NSNDict.ContainsKey(NSN))
-                                        {
-                                            NSNDict.Add(NSN, tempList2);
-                                        }
-                                        else
-                                        {
-                                            NSNDict[NSN].Add(Key);
-                                        }  
-                                    }                                    
+                                        errorfound = "FILLER, VOID";
+                                    }                                                                                                          
                                 }
                                 else
                                 {
-                                    int a;
-                                    a = 1;
+                                    errorfound = "FOAM SEGMENT";
                                 }
+
+                                if (!sw && !errorfound.Equals(""))
+                                {
+                                    if (!Filtered.ContainsKey(errorfound))
+                                    {
+                                        Filtered.Add(errorfound, 1);
+                                    }
+                                    else
+                                    {
+                                        Filtered[errorfound] += 1;
+                                    }
+                                }
+                                
                         }
-                           catch (Exception)
+                           catch (Exception e)
                             {
-                                Notcounts[levelint] += 1;
+                                int index = line.IndexOf("/");
+                               Notcounts[levelint] += 1;
                             }
                             
                     }                    
@@ -559,6 +667,11 @@ namespace Filters
 
 
             }
+        }
+
+        public void listemps()
+        {
+
         }
     }
 }
