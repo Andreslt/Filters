@@ -55,7 +55,7 @@ namespace Filters
 
         }
 
-        public List<String> ReadPdfFile(string fileName, List<String> cw)
+        public String ReadPdfFile(string fileName, List<String> cw)
         {
             founds = new List<String>();
             String foundsText="";
@@ -91,11 +91,11 @@ namespace Filters
                 if (sw) //CRITICAL WORDS WERE FOUND.
                 {
                     badwords = true;
-                    MessageBox.Show("Se encontraron las siguientes palabras críticas: " + foundsText);
+                    //MessageBox.Show("En la solicitud: "+ fileName.Substring(fileName.LastIndexOf("\\")+1,13)+". Se encontraron las siguientes palabras críticas: " + foundsText);
                 }
                 pdfReader.Close();
             }
-            return founds;
+            return foundsText;
         }
 
         public void SearchInFolder()
@@ -152,15 +152,15 @@ namespace Filters
                             {
                                 if (wkr > 2) wkr = 0;
                                 String rt = folder;
-                                rt = rt + "\\" + fl.Name;
+                                rt = rt + "\\pdfs\\" + fl.Name;
                                 badwords = false;
-                                ReadPdfFile(rt, Cwords);
+                                String founds = ReadPdfFile(rt, Cwords);
                                 if (!badwords)
                                 {
                                     File.Copy(fl.FullName, dPath + "\\" + workers[wkr] + "\\" + fl.Name);
                                     //File.Delete(fl.FullName);
                                 }
-                                Statistics(badwords, fl, workers[wkr]);
+                                Statistics(badwords, fl, workers[wkr], founds);
                                 wkr++;
                             }
                         }
@@ -357,10 +357,8 @@ namespace Filters
             }
         }
 
-        public void Statistics (bool badwords, FileInfo fl, String Worker)
-        {          
-            if (!badwords)
-            {
+        public void Statistics (bool badwords, FileInfo fl, String Worker, String founds)
+        {
                 DateTime time = dTimePick.Value;
                 DataRow row = dt.NewRow();
                 row["DATE"] = time.ToShortDateString();
@@ -377,48 +375,47 @@ namespace Filters
                 int i=0;
                 foreach (var item in  NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]])
 	            {
-                   // if (i!=0)
-                   // {
-                        if (i%2==0)
-                        {
-                            //CAGE CODE
-                            if (row["CAGE CODE"].Equals(""))
-                            {
-                                row["CAGE CODE"] = NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]][i];
-                            }
-                            else
-                            {
-                                if (!row["CAGE CODE"].ToString().Contains(NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]][i]))
-                                    row["CAGE CODE"] = row["CAGE CODE"] + ", " + NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]][i];
-                            }
-                            
-                        }else
-                        {
-                            //PART NUMBER
-                            if (row["PART NUMBER(S)"].Equals(""))
-                            {
-                                row["PART NUMBER(S)"] = NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]][i];
-                            }
-                            else
-                            {
-                                if (!row["PART NUMBER(S)"].ToString().Contains(NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]][i]))
-                                    row["PART NUMBER(S)"] = row["PART NUMBER(S)"] + ", " + NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]][i];
-                            }                            
-                        }
-                    //}
+                   if (i%2==0)
+                   {
+                      //CAGE CODE
+                      if (row["CAGE CODE"].Equals(""))
+                       {
+                         row["CAGE CODE"] = NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]][i];
+                       }
+                       else
+                       {
+                         if (!row["CAGE CODE"].ToString().Contains(NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]][i]))
+                           row["CAGE CODE"] = row["CAGE CODE"] + ", " + NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]][i];
+                       }
+                   }
+                   else
+                   {
+                        //PART NUMBER
+                      if (row["PART NUMBER(S)"].Equals(""))
+                      {
+                        row["PART NUMBER(S)"] = NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]][i];
+                      }
+                      else
+                      {
+                        if (!row["PART NUMBER(S)"].ToString().Contains(NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]][i]))
+                          row["PART NUMBER(S)"] = row["PART NUMBER(S)"] + ", " + NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]][i];
+                      }                            
+                    }
                     i++;
 	            }
-                
-                //row["CAGE CODE"] = NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]][1];
-                //row["PART NUMBER(S)"] = NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]][2];                
+                                              
                 row["WORKER"] = Worker;
                 string sol = fl.Name.Substring(0, fl.Name.IndexOf("."));
                 if (FATDic.ContainsKey(sol))
                 {
                     row["COMMENTS"] = "FAT";
                 }
+
+                if (badwords)
+                {
+                    row["COMMENTS"] = founds;
+                }
                 dt.Rows.Add(row);
-            }
         }
 
         private void tabControl1_Selected(object sender, TabControlEventArgs e)
@@ -519,9 +516,10 @@ namespace Filters
                 String Group="";
                 
                     String Key = strArray[0].Substring(0, strArray[0].Length - 13); //SOLICITATION
-                    if (Key.Equals("SPE4A515TD724"))
+                    if (Key.Equals("SPE4A515TD699"))
                     {
                         int a;
+                        a = 1;
                     }
                     String level = Key.Substring(3, 1);
                     if (level.Equals("4") || level.Equals("5") || level.Equals("7") || level.Equals("8") || level.Equals("F"))
