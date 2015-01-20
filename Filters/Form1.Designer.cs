@@ -80,12 +80,12 @@
             // dTimePick
             // 
             this.dTimePick.Location = new System.Drawing.Point(112, 18);
-            this.dTimePick.MaxDate = new System.DateTime(2030, 12, 31, 0, 0, 0, 0);
+            this.dTimePick.MaxDate = new System.DateTime(2020, 12, 31, 0, 0, 0, 0);
             this.dTimePick.MinDate = new System.DateTime(2011, 1, 1, 0, 0, 0, 0);
             this.dTimePick.Name = "dTimePick";
             this.dTimePick.Size = new System.Drawing.Size(200, 20);
             this.dTimePick.TabIndex = 4;
-            this.dTimePick.Value = new System.DateTime(2014, 12, 10, 20, 16, 6, 0);
+            this.dTimePick.Value = new System.DateTime(2015, 1, 20, 11, 44, 15, 0);
             // 
             // btn_Continue
             // 

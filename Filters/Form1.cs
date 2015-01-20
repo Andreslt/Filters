@@ -24,7 +24,8 @@ namespace Filters
         int [] Download, FF;
         Dictionary<string, List<string>> SolsDict, NSNDict;
         Dictionary<string, int> Filtered;
-        String route, intxt, astxt, folder, file, dPath;        
+        Dictionary<String, String> FATDic = new Dictionary<string, string>();
+        String route, intxt, astxt, bqtxt, folder, file, dPath;        
         List<String> founds;
         List<String> Cwords = new List<string>();
         List<String> selectedFiles;
@@ -129,7 +130,7 @@ namespace Filters
                 dt.Clear();
                 folderbydate(time, MomPath);
                 ResultsColumns(true);
-                DirectoryInfo folders = new DirectoryInfo(folder);
+                DirectoryInfo folders = new DirectoryInfo(folder+"//pdfs");
                 FileInfo[] files = folders.GetFiles();
                 String[] workers = { "NORELLA", "SASHLEY", "STEPHANIA" };
                 int wkr = 0;bool workFile=true;
@@ -137,27 +138,31 @@ namespace Filters
                 {
                     if(fl.Name.Contains(".pdf"))
                     {
-                        if (rB2.Checked)
+                        String rname = fl.Name.Substring(0, fl.Name.IndexOf("."));
+                        if (SolsDict.ContainsKey(rname))
                         {
-                            workFile = false;
-                            if (selectedFiles.Contains(fl.Name))
-                                workFile = true;
-                        }
-
-                        if (workFile)
-                        {
-                            if (wkr > 2) wkr = 0;
-                            String rt = folder;
-                            rt = rt + "\\" + fl.Name;
-                            badwords = false;
-                            ReadPdfFile(rt, Cwords);
-                            if (!badwords)
+                            if (rB2.Checked)
                             {
-                                File.Copy(fl.FullName, dPath + "\\" + workers[wkr] + "\\" + fl.Name);
-                                File.Delete(fl.FullName);
+                                workFile = false;
+                                if (selectedFiles.Contains(fl.Name))
+                                    workFile = true;
                             }
-                            Statistics(badwords, fl, workers[wkr]);
-                            wkr++;
+
+                            if (workFile)
+                            {
+                                if (wkr > 2) wkr = 0;
+                                String rt = folder;
+                                rt = rt + "\\" + fl.Name;
+                                badwords = false;
+                                ReadPdfFile(rt, Cwords);
+                                if (!badwords)
+                                {
+                                    File.Copy(fl.FullName, dPath + "\\" + workers[wkr] + "\\" + fl.Name);
+                                    //File.Delete(fl.FullName);
+                                }
+                                Statistics(badwords, fl, workers[wkr]);
+                                wkr++;
+                            }
                         }
                     }
                 }
@@ -358,12 +363,61 @@ namespace Filters
             {
                 DateTime time = dTimePick.Value;
                 DataRow row = dt.NewRow();
-                row["Date"] = time.ToShortDateString();
-                row["Group"] = fl.Name.Substring(0, 3);
-                row["NSN"] = "XXXX";
-                row["Solicitation"] = fl.Name.Substring(0,fl.Name.IndexOf("."));
-                row["Worker"] = Worker;
-                dt.Rows.Add(row);             
+                row["DATE"] = time.ToShortDateString();
+                row["GROUP"] = fl.Name.Substring(0, 4);
+                row["NSN"] = SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3];
+                row["SOLICITATION"] = fl.Name.Substring(0,fl.Name.IndexOf("."));
+                row["REQUISITION"] = SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][2];
+                row["DUE DATE"] = SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][1];
+                row["QTY"] = SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][6];
+                row["UNIT"] = SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][5];
+                row["DESCRIPTION"] = SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][4];
+                row["CAGE CODE"] = "";
+                row["PART NUMBER(S)"] = "";
+                int i=0;
+                foreach (var item in  NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]])
+	            {
+                   // if (i!=0)
+                   // {
+                        if (i%2==0)
+                        {
+                            //CAGE CODE
+                            if (row["CAGE CODE"].Equals(""))
+                            {
+                                row["CAGE CODE"] = NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]][i];
+                            }
+                            else
+                            {
+                                if (!row["CAGE CODE"].ToString().Contains(NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]][i]))
+                                    row["CAGE CODE"] = row["CAGE CODE"] + ", " + NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]][i];
+                            }
+                            
+                        }else
+                        {
+                            //PART NUMBER
+                            if (row["PART NUMBER(S)"].Equals(""))
+                            {
+                                row["PART NUMBER(S)"] = NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]][i];
+                            }
+                            else
+                            {
+                                if (!row["PART NUMBER(S)"].ToString().Contains(NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]][i]))
+                                    row["PART NUMBER(S)"] = row["PART NUMBER(S)"] + ", " + NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]][i];
+                            }                            
+                        }
+                    //}
+                    i++;
+	            }
+                
+                //row["CAGE CODE"] = NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]][1];
+                //row["PART NUMBER(S)"] = NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]][2];                
+                row["WORKER"] = Worker;
+                string sol = fl.Name.Substring(0, fl.Name.IndexOf("."));
+                if (FATDic.ContainsKey(sol))
+                {
+                    row["COMMENTS"] = "FAT";
+                }
+                dt.Rows.Add(row);
             }
         }
 
@@ -381,7 +435,6 @@ namespace Filters
                     this.MaximumSize = new System.Drawing.Size(600, 360);
                     this.Size = new System.Drawing.Size(600, 250);
                 }
-                    
             }
         }
 
@@ -413,6 +466,7 @@ namespace Filters
             {
                 Excelfile.WriteDataTableToExcel(dt, "Report", saveFileDialog1.FileName, "Daily Report");
             }
+            MessageBox.Show("Exportación completa");
         }
 
         public void Dictionaries()
@@ -431,14 +485,26 @@ namespace Filters
                 if (fl.Name.Contains(".txt"))
                 {
                     if (fl.Name.Contains("in"))
-                        intxt = fl.FullName;
+                    { 
+                        intxt = fl.FullName; 
+                    }
                     else
-                        astxt = fl.FullName;
+                    {
+                        if (fl.Name.Contains("as"))
+                        {
+                            astxt = fl.FullName;
+                        }
+                        else
+                        {
+                            bqtxt = fl.FullName;
+                        }
+                    }
                 }
             }
 
             var reader1 = new StreamReader(File.OpenRead(intxt)); // SOLICITATIONS
             var reader2 = new StreamReader(File.OpenRead(astxt)); // NSN
+            var reader3 = new StreamReader(File.OpenRead(bqtxt)); // FATS
 
             string line;
             string[] strArray;
@@ -453,7 +519,7 @@ namespace Filters
                 String Group="";
                 
                     String Key = strArray[0].Substring(0, strArray[0].Length - 13); //SOLICITATION
-                    if (Key.Equals("SPE4A515Q0618"))
+                    if (Key.Equals("SPE4A515TD724"))
                     {
                         int a;
                     }
@@ -522,7 +588,7 @@ namespace Filters
                                 }
 
                                 DateTime realDue,now;
-                                now = Convert.ToDateTime("22/12/2014");
+                                now = Convert.ToDateTime("04/01/2015");
                                 //now = DateTime.Now.Date; //dd-MM-yy MODIFICAR A ESTE VALOR POSTERIORMENTE!!!
                                 String[] datefix = DueDate.Split('/');//MM-dd-yy
                                 int day = int.Parse(datefix[1]);
@@ -585,15 +651,15 @@ namespace Filters
                                                                     }
 
                                                                     tempList2 = new List<string>();
-                                                                    tempList2.Add(Key);
+                                                                    //tempList2.Add(Key);
                                                                     if (!NSNDict.ContainsKey(NSN))
                                                                     {
                                                                         NSNDict.Add(NSN, tempList2);
                                                                     }
-                                                                    else
+                                                                   /* else
                                                                     {
                                                                         NSNDict[NSN].Add(Key);
-                                                                    }
+                                                                    }*/
                                                                 }
                                                             }
                                                             else
@@ -647,29 +713,64 @@ namespace Filters
                                         Filtered[errorfound] += 1;
                                     }
                                 }
-                                
                         }
                            catch (Exception e)
                             {
                                 int index = line.IndexOf("/");
                                Notcounts[levelint] += 1;
                             }
-                            
-                    }                    
+                    }
               }
 
-            MessageBox.Show("No contados: " + "G4: " + Notcounts[0] + "," + "G5: " + Notcounts[1] + "," + "G7: " + Notcounts[2] + "," + "G8: " + Notcounts[3] + "," + "FA: " + Notcounts[4]);
+            //MessageBox.Show("No contados: " + "G4: " + Notcounts[0] + "," + "G5: " + Notcounts[1] + "," + "G7: " + Notcounts[2] + "," + "G8: " + Notcounts[3] + "," + "FA: " + Notcounts[4]);
+            MessageBox.Show("El download de hoy fue: " + "G4: " + Download[0] + "," + "G5: " + Download[1] + "," + "G7: " + Download[2] + "," + "G8: " + Download[3] + "," + "FA: " + Download[4]);
+            MessageBox.Show("El FF de hoy fue: " + "G4: " + FF[0] + "," + "G5: " + FF[1] + "," + "G7: " + FF[2] + "," + "G8: " + FF[3] + "," + "FA: " + FF[4]);
             while (!reader2.EndOfStream)
-            {
-                tempList = new List<string>();
+            {              
+                
                 line = reader2.ReadLine();
                 strArray = line.Split(',');
 
+                String NSN = strArray[0].Substring(1, strArray[0].Length-2);
+                String CAGE = strArray[1].Substring(1, strArray[1].Length - 2);
+                String PN = strArray[2].Substring(1, strArray[2].Length - 2);
 
+                tempList = new List<string>();
+
+                if (NSNDict.ContainsKey(NSN))
+                {
+                    tempList = NSNDict[NSN];
+                    tempList.Add(CAGE); // CAGE CODE
+                    tempList.Add(PN); // PART NUMBER
+
+                    NSNDict[NSN] = tempList;
+                }
+            }
+
+            
+
+            while (!reader3.EndOfStream)
+            {
+                line = reader3.ReadLine();
+                strArray = line.Split(',');
+
+                string Sol = strArray[0].Substring(1, strArray[0].Length-2);
+                if (Sol.Substring(0,4).Equals("SPE4")||Sol.Substring(0,4).Equals("SPE5")|| Sol.Substring(0,4).Equals("SPE7")||Sol.Substring(0,4).Equals("SPE8")|| Sol.Substring(0,4).Equals("SPEF"))
+                {
+                    string NSN = strArray[46].Substring(1, strArray[46].Length - 2);
+
+                    if (NSN.Contains("0001S"))
+                    {
+                        if (!FATDic.ContainsKey(Sol))
+                        {
+                            FATDic.Add(Sol, NSN);
+                        }
+                    }
+                }                
             }
         }
 
-        public void listemps()
+        public void fatsfinder()
         {
 
         }
