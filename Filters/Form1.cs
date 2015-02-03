@@ -24,7 +24,8 @@ namespace Filters
         int [] Download, FF;
         Dictionary<string, List<string>> SolsDict, NSNDict;
         Dictionary<string, int> Filtered;
-        Dictionary<String, String> FATDic = new Dictionary<string, string>();
+        Dictionary<String, String> FATDic;
+        Dictionary<String, String> Cages;
         String route, intxt, astxt, bqtxt, folder, file, dPath;        
         List<String> founds;
         List<String> Cwords = new List<string>();
@@ -61,8 +62,8 @@ namespace Filters
             String foundsText="";
             if (File.Exists(fileName))
             {
-                PdfReader pdfReader = new PdfReader(fileName);                
-                bool sw = false;
+                PdfReader pdfReader = new PdfReader(fileName);
+                bool sw = false, shaz; int fats=0;
                 for (int page = 1; page <= pdfReader.NumberOfPages; page++)
                 {
                     ITextExtractionStrategy strategy = new SimpleTextExtractionStrategy();
@@ -73,19 +74,39 @@ namespace Filters
                     {
                         if (currentText.Contains(cw[i]))
                         {
-                            sw = true;
-                            if (!founds.Contains(cw[i]))
+                            sw = true; shaz = false;
+                           /* if (cw[i].Equals("FIRST ARTICLE TESTING")||cw[i].Equals("FIRST ARTICLE TEST")||cw[i].Equals("FAT"))
+                            {
+                                sfat=true;
+                                fats = fats + 1; 
+                            }
+                            }*/
+                            string group = fileName.Substring(fileName.LastIndexOf("\\")+1,4);
+                            if (cw[i].Equals("HAZARDOUS") && !group.Equals("SPE7"))
+                            {
+                                shaz = true;
+                            }
+
+                            if (!founds.Contains(cw[i]) && !shaz)
                             founds.Add(cw[i]);
                         }
+                    }
+                }
+
+                if (fats>1)
+                {
+                    if (!founds.Contains("FIRST ARTICLE TESTING") && !founds.Contains("FIRST ARTICLE TEST"))
+                    {
+                        founds.Add("FIRST ARTICLE TESTING *" + fats);
                     }
                 }
 
                 foreach (var fs in founds)
 	            {
                     if (fs!=founds.Last())
-		                foundsText=foundsText+fs+",";
+		                foundsText=foundsText+fs+", ";
                     else
-                        foundsText=foundsText+fs+".";
+                        foundsText=foundsText+fs;
 	            }
 
                 if (sw) //CRITICAL WORDS WERE FOUND.
@@ -324,19 +345,6 @@ namespace Filters
             {
                 dgvResults.DataSource = dt;    
             }
-                
-
-            /*if (comboBox2.SelectedIndex == 0)
-            {
-                //DETAILED REPORT
-                //ResultsColumns(false);
-                //dgvResults.DataSource = dt;
-            }
-            else
-            {*/
-                //DAY REPORT                
-                
-            //}
         }
 
         private void releaseObject(object obj)
@@ -399,7 +407,7 @@ namespace Filters
                       {
                         if (!row["PART NUMBER(S)"].ToString().Contains(NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]][i]))
                           row["PART NUMBER(S)"] = row["PART NUMBER(S)"] + ", " + NSNDict[SolsDict[fl.Name.Substring(0, fl.Name.IndexOf("."))][3]][i];
-                      }                            
+                      }
                     }
                     i++;
 	            }
@@ -408,13 +416,32 @@ namespace Filters
                 string sol = fl.Name.Substring(0, fl.Name.IndexOf("."));
                 if (FATDic.ContainsKey(sol))
                 {
-                    row["COMMENTS"] = "FAT";
+                    row["COMMENTS"] = "FAT SOLICITATION";
                 }
 
                 if (badwords)
                 {
-                    row["COMMENTS"] = founds;
+                    if (!row["COMMENTS"].ToString().Contains("FAT"))
+                    {
+                        row["COMMENTS"] = founds;
+                    }
                 }
+
+                foreach (string item in Cages.Keys)
+                {
+                    if (row["CAGE CODE"].ToString().Contains(item))
+                    {
+                        if (!row["COMMENTS"].ToString().Equals(""))
+                        {
+                            row["COMMENTS"] = row["COMMENTS"] + ", " + Cages[item];
+                        }
+                        else
+                            row["COMMENTS"] = Cages[item];
+
+                        break;
+                    }
+                }
+
                 dt.Rows.Add(row);
         }
 
@@ -422,14 +449,16 @@ namespace Filters
         {
             if (e.TabPage.Name == "tabResults")
             {
-                this.MaximumSize = new System.Drawing.Size(600, 360);
-                this.Size = new System.Drawing.Size(600, 360);
+                this.MaximumSize = new System.Drawing.Size(900, 560);
+                this.MinimumSize = new System.Drawing.Size(900, 560);
+                this.Size = new System.Drawing.Size(900, 560);
             }
             else
             {
                 if (e.TabPage.Name == "tabFiltrar")
                 {
-                    this.MaximumSize = new System.Drawing.Size(600, 360);
+                    this.MaximumSize = new System.Drawing.Size(600, 200);
+                    this.MinimumSize = new System.Drawing.Size(600, 200);
                     this.Size = new System.Drawing.Size(600, 250);
                 }
             }
@@ -473,6 +502,8 @@ namespace Filters
             SolsDict = new Dictionary<string, List<string>>();
             NSNDict = new Dictionary<string, List<string>>();
             Filtered = new Dictionary<string, int>();
+            FATDic = new Dictionary<string, string>();
+            Cages = new Dictionary<string, string>();
 
             DirectoryInfo folders = new DirectoryInfo(folder);
             FileInfo[] files = folders.GetFiles();
@@ -508,7 +539,7 @@ namespace Filters
             List<String> tempList, tempList2;
             int [] Notcounts = new int[5] {0,0,0,0,0};
             while (!reader1.EndOfStream)
-            {                
+            {
                 tempList = new List<string>();
                 line = reader1.ReadLine();
                 strArray = line.Split(' ');
@@ -516,11 +547,7 @@ namespace Filters
                 String Group="";
                 
                     String Key = strArray[0].Substring(0, strArray[0].Length - 13); //SOLICITATION
-                    if (Key.Equals("SPE4A515TD699"))
-                    {
-                        int a;
-                        a = 1;
-                    }
+
                     String level = Key.Substring(3, 1);
                     if (level.Equals("4") || level.Equals("5") || level.Equals("7") || level.Equals("8") || level.Equals("F"))
                     {
@@ -582,11 +609,11 @@ namespace Filters
                                     else
                                     {
                                         break;
-                                    }                                    
+                                    }
                                 }
 
                                 DateTime realDue,now;
-                                now = Convert.ToDateTime("04/01/2015");
+                                now = Convert.ToDateTime("04/12/2014");
                                 //now = DateTime.Now.Date; //dd-MM-yy MODIFICAR A ESTE VALOR POSTERIORMENTE!!!
                                 String[] datefix = DueDate.Split('/');//MM-dd-yy
                                 int day = int.Parse(datefix[1]);
@@ -622,12 +649,26 @@ namespace Filters
                                                                     if (NSN.Substring(0,2).Equals("59"))
                                                                     {
                                                                         sw = false;
-                                                                    }                                        
+                                                                    }
                                                                  }
 
                                                                 if (sw)
                                                                 {
                                                                     FF[levelint] += 1;
+                                                                    string pt = MomPath + @"\First Filter.txt";
+                                                                    /*StreamWriter swriter = new StreamWriter(pt,true);
+                                                                    swriter.WriteLine(Key);*/
+                                                                   
+                                                                    using (System.IO.StreamWriter writer = new System.IO.StreamWriter(pt, true))
+                                                                    {
+                                                                        writer.WriteLine(Key);
+                                                                        writer.Close();
+                                                                    }
+                                                                    
+
+                                                                    /*DataRow row = dt.NewRow();
+                                                                    row["SOLICITATION"] = Key;
+                                                                    dt.Rows.Add(row);*/
                                                                     tempList.Add(Group); //GROUP
                                                                     tempList.Add(DueDate);  //DUE DATE
                                                                     tempList.Add(Requisition); //REQUISITION
@@ -712,11 +753,11 @@ namespace Filters
                                     }
                                 }
                         }
-                           catch (Exception e)
-                            {
-                                int index = line.IndexOf("/");
-                               Notcounts[levelint] += 1;
-                            }
+                        catch (Exception e)
+                        {
+                           int index = line.IndexOf("/");
+                           Notcounts[levelint] += 1;
+                        }
                     }
               }
 
@@ -724,8 +765,7 @@ namespace Filters
             MessageBox.Show("El download de hoy fue: " + "G4: " + Download[0] + "," + "G5: " + Download[1] + "," + "G7: " + Download[2] + "," + "G8: " + Download[3] + "," + "FA: " + Download[4]);
             MessageBox.Show("El FF de hoy fue: " + "G4: " + FF[0] + "," + "G5: " + FF[1] + "," + "G7: " + FF[2] + "," + "G8: " + FF[3] + "," + "FA: " + FF[4]);
             while (!reader2.EndOfStream)
-            {              
-                
+            {
                 line = reader2.ReadLine();
                 strArray = line.Split(',');
 
@@ -745,15 +785,13 @@ namespace Filters
                 }
             }
 
-            
-
             while (!reader3.EndOfStream)
             {
                 line = reader3.ReadLine();
                 strArray = line.Split(',');
 
                 string Sol = strArray[0].Substring(1, strArray[0].Length-2);
-                if (Sol.Substring(0,4).Equals("SPE4")||Sol.Substring(0,4).Equals("SPE5")|| Sol.Substring(0,4).Equals("SPE7")||Sol.Substring(0,4).Equals("SPE8")|| Sol.Substring(0,4).Equals("SPEF"))
+                if (Sol.Substring(3,1).Equals("4")||Sol.Substring(3,1).Equals("5")|| Sol.Substring(3,1).Equals("7")||Sol.Substring(3,1).Equals("8")|| Sol.Substring(3,1).Equals("F"))
                 {
                     string NSN = strArray[46].Substring(1, strArray[46].Length - 2);
 
@@ -764,13 +802,15 @@ namespace Filters
                             FATDic.Add(Sol, NSN);
                         }
                     }
-                }                
+                }
             }
-        }
 
-        public void fatsfinder()
-        {
-
+            var reader4 = new StreamReader(File.OpenRead(@"C:\Users\Altum Aerospace\Documents\Andrés Lastra\Altum\Filtros\App\Bad Companies.txt")); // BAD COMPANIES
+            while (!reader4.EndOfStream)
+            {
+                string[] line2 = reader4.ReadLine().Split(',');
+                Cages.Add(line2[0], line2[1]);
+            }
         }
     }
 }

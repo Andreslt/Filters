@@ -41,11 +41,11 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabFiltrar = new System.Windows.Forms.TabPage();
             this.tabResults = new System.Windows.Forms.TabPage();
+            this.dgvResults = new System.Windows.Forms.DataGridView();
             this.lblExportarExcel = new System.Windows.Forms.Label();
             this.btn_ExportarExcel = new System.Windows.Forms.Button();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.btnConsultar = new System.Windows.Forms.Button();
-            this.dgvResults = new System.Windows.Forms.DataGridView();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -90,7 +90,7 @@
             // btn_Continue
             // 
             this.btn_Continue.Enabled = false;
-            this.btn_Continue.Location = new System.Drawing.Point(485, 106);
+            this.btn_Continue.Location = new System.Drawing.Point(485, 97);
             this.btn_Continue.Name = "btn_Continue";
             this.btn_Continue.Size = new System.Drawing.Size(75, 33);
             this.btn_Continue.TabIndex = 6;
@@ -112,7 +112,7 @@
             // 
             this.groupBox1.Controls.Add(this.rB2);
             this.groupBox1.Controls.Add(this.rB1);
-            this.groupBox1.Location = new System.Drawing.Point(9, 106);
+            this.groupBox1.Location = new System.Drawing.Point(9, 148);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(159, 66);
             this.groupBox1.TabIndex = 8;
@@ -149,7 +149,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(584, 211);
+            this.tabControl1.Size = new System.Drawing.Size(584, 161);
             this.tabControl1.TabIndex = 9;
             this.tabControl1.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl1_Selected);
             // 
@@ -165,17 +165,17 @@
             this.tabFiltrar.Location = new System.Drawing.Point(4, 22);
             this.tabFiltrar.Name = "tabFiltrar";
             this.tabFiltrar.Padding = new System.Windows.Forms.Padding(3);
-            this.tabFiltrar.Size = new System.Drawing.Size(576, 185);
+            this.tabFiltrar.Size = new System.Drawing.Size(576, 135);
             this.tabFiltrar.TabIndex = 0;
             this.tabFiltrar.Text = "Filtrar";
             // 
             // tabResults
             // 
+            this.tabResults.Controls.Add(this.dgvResults);
             this.tabResults.Controls.Add(this.lblExportarExcel);
             this.tabResults.Controls.Add(this.btn_ExportarExcel);
             this.tabResults.Controls.Add(this.comboBox2);
             this.tabResults.Controls.Add(this.btnConsultar);
-            this.tabResults.Controls.Add(this.dgvResults);
             this.tabResults.Location = new System.Drawing.Point(4, 22);
             this.tabResults.Name = "tabResults";
             this.tabResults.Size = new System.Drawing.Size(576, 185);
@@ -183,11 +183,20 @@
             this.tabResults.Text = "Resultados";
             this.tabResults.UseVisualStyleBackColor = true;
             // 
+            // dgvResults
+            // 
+            this.dgvResults.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvResults.Location = new System.Drawing.Point(8, 86);
+            this.dgvResults.Name = "dgvResults";
+            this.dgvResults.Size = new System.Drawing.Size(860, 389);
+            this.dgvResults.TabIndex = 0;
+            this.dgvResults.DataSourceChanged += new System.EventHandler(this.dgvResults_DataSourceChanged);
+            // 
             // lblExportarExcel
             // 
             this.lblExportarExcel.AutoSize = true;
             this.lblExportarExcel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblExportarExcel.Location = new System.Drawing.Point(431, 23);
+            this.lblExportarExcel.Location = new System.Drawing.Point(728, 28);
             this.lblExportarExcel.Name = "lblExportarExcel";
             this.lblExportarExcel.Size = new System.Drawing.Size(96, 15);
             this.lblExportarExcel.TabIndex = 4;
@@ -198,7 +207,7 @@
             // 
             this.btn_ExportarExcel.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.btn_ExportarExcel.Image = global::Filters.Properties.Resources.application_vnd_ms_excel;
-            this.btn_ExportarExcel.Location = new System.Drawing.Point(530, 13);
+            this.btn_ExportarExcel.Location = new System.Drawing.Point(836, 19);
             this.btn_ExportarExcel.Margin = new System.Windows.Forms.Padding(0);
             this.btn_ExportarExcel.Name = "btn_ExportarExcel";
             this.btn_ExportarExcel.Size = new System.Drawing.Size(32, 36);
@@ -212,14 +221,14 @@
             this.comboBox2.FormattingEnabled = true;
             this.comboBox2.Items.AddRange(new object[] {
             "Reporte Diario"});
-            this.comboBox2.Location = new System.Drawing.Point(8, 13);
+            this.comboBox2.Location = new System.Drawing.Point(19, 28);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(121, 21);
             this.comboBox2.TabIndex = 2;
             // 
             // btnConsultar
             // 
-            this.btnConsultar.Location = new System.Drawing.Point(146, 13);
+            this.btnConsultar.Location = new System.Drawing.Point(163, 28);
             this.btnConsultar.Name = "btnConsultar";
             this.btnConsultar.Size = new System.Drawing.Size(75, 23);
             this.btnConsultar.TabIndex = 1;
@@ -227,23 +236,14 @@
             this.btnConsultar.UseVisualStyleBackColor = true;
             this.btnConsultar.Click += new System.EventHandler(this.btnConsultar_Click);
             // 
-            // dgvResults
-            // 
-            this.dgvResults.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvResults.Location = new System.Drawing.Point(7, 55);
-            this.dgvResults.Name = "dgvResults";
-            this.dgvResults.Size = new System.Drawing.Size(555, 219);
-            this.dgvResults.TabIndex = 0;
-            this.dgvResults.DataSourceChanged += new System.EventHandler(this.dgvResults_DataSourceChanged);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(584, 211);
+            this.ClientSize = new System.Drawing.Size(584, 161);
             this.Controls.Add(this.tabControl1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximumSize = new System.Drawing.Size(600, 250);
+            this.MaximumSize = new System.Drawing.Size(900, 560);
             this.Name = "Form1";
             this.Text = "ALTUM AEROSPACE";
             this.groupBox1.ResumeLayout(false);
@@ -272,12 +272,12 @@
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabFiltrar;
         private System.Windows.Forms.TabPage tabResults;
-        private System.Windows.Forms.DataGridView dgvResults;
         private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.Button btnConsultar;
         private System.Windows.Forms.Button btn_ExportarExcel;
         private System.Windows.Forms.Label lblExportarExcel;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.DataGridView dgvResults;
     }
 }
 
