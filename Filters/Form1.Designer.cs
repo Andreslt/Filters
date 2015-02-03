@@ -85,7 +85,7 @@
             this.dTimePick.Name = "dTimePick";
             this.dTimePick.Size = new System.Drawing.Size(200, 20);
             this.dTimePick.TabIndex = 4;
-            this.dTimePick.Value = new System.DateTime(2015, 1, 20, 11, 44, 15, 0);
+            this.dTimePick.Value = new System.DateTime(2015, 2, 3, 0, 0, 0, 0);
             // 
             // btn_Continue
             // 
@@ -178,7 +178,7 @@
             this.tabResults.Controls.Add(this.btnConsultar);
             this.tabResults.Location = new System.Drawing.Point(4, 22);
             this.tabResults.Name = "tabResults";
-            this.tabResults.Size = new System.Drawing.Size(576, 185);
+            this.tabResults.Size = new System.Drawing.Size(576, 135);
             this.tabResults.TabIndex = 2;
             this.tabResults.Text = "Resultados";
             this.tabResults.UseVisualStyleBackColor = true;

@@ -31,12 +31,14 @@ namespace Filters
         List<String> Cwords = new List<string>();
         List<String> selectedFiles;
         DataTable dt = new DataTable("Statistics");
-        String MomPath = @"C:\Users\Altum Aerospace\Documents\Andrés Lastra\Altum\Filtros\App\Solicitations _ Test";
+        //String MomPath = @"C:\Users\Altum Aerospace\Documents\Andrés Lastra\Altum\Filtros\App\Solicitations _ Test";
+        String MomPath = @"C:\Users\Altum Aerospace\Desktop\ALTUM APP";
         bool badwords;
         //Excel.Application xlApp = new Excel.Application();
         private void button1_Click(object sender, EventArgs e)
         {
-            var reader = new StreamReader(File.OpenRead(@"C:\Users\Altum Aerospace\Documents\Andrés Lastra\Altum\Filtros\App\Critical words.txt"));
+            string df = MomPath + @"\Settings\Critical words.txt";
+            var reader = new StreamReader(File.OpenRead(df));
             Cwords.Clear();
             while (!reader.EndOfStream)
             {
@@ -162,12 +164,12 @@ namespace Filters
                         String rname = fl.Name.Substring(0, fl.Name.IndexOf("."));
                         if (SolsDict.ContainsKey(rname))
                         {
-                            if (rB2.Checked)
+                            /*if (rB2.Checked)
                             {
                                 workFile = false;
                                 if (selectedFiles.Contains(fl.Name))
                                     workFile = true;
-                            }
+                            }*/
 
                             if (workFile)
                             {
@@ -297,7 +299,7 @@ namespace Filters
         {
             try
             {
-                var reader = new StreamReader(File.OpenRead(@"C:\Users\Altum Aerospace\Documents\Andrés Lastra\Altum\Filtros\App\Result columns.txt"));
+                var reader = new StreamReader(File.OpenRead(MomPath + @"\Settings\Result columns.txt"));
                 int r = 0, d = 0; bool sw = false;
                 while (!reader.EndOfStream)
                 {
@@ -613,8 +615,8 @@ namespace Filters
                                 }
 
                                 DateTime realDue,now;
-                                now = Convert.ToDateTime("04/12/2014");
-                                //now = DateTime.Now.Date; //dd-MM-yy MODIFICAR A ESTE VALOR POSTERIORMENTE!!!
+                                //now = Convert.ToDateTime("27/12/2014");
+                                now = DateTime.Now.Date; //dd-MM-yy MODIFICAR A ESTE VALOR POSTERIORMENTE!!!
                                 String[] datefix = DueDate.Split('/');//MM-dd-yy
                                 int day = int.Parse(datefix[1]);
                                 int month = int.Parse(datefix[0]);
@@ -695,11 +697,7 @@ namespace Filters
                                                                     {
                                                                         NSNDict.Add(NSN, tempList2);
                                                                     }
-                                                                   /* else
-                                                                    {
-                                                                        NSNDict[NSN].Add(Key);
-                                                                    }*/
-                                                                }
+                                                                  }
                                                             }
                                                             else
                                                             {
@@ -760,8 +758,7 @@ namespace Filters
                         }
                     }
               }
-
-            //MessageBox.Show("No contados: " + "G4: " + Notcounts[0] + "," + "G5: " + Notcounts[1] + "," + "G7: " + Notcounts[2] + "," + "G8: " + Notcounts[3] + "," + "FA: " + Notcounts[4]);
+           
             MessageBox.Show("El download de hoy fue: " + "G4: " + Download[0] + "," + "G5: " + Download[1] + "," + "G7: " + Download[2] + "," + "G8: " + Download[3] + "," + "FA: " + Download[4]);
             MessageBox.Show("El FF de hoy fue: " + "G4: " + FF[0] + "," + "G5: " + FF[1] + "," + "G7: " + FF[2] + "," + "G8: " + FF[3] + "," + "FA: " + FF[4]);
             while (!reader2.EndOfStream)
@@ -804,8 +801,8 @@ namespace Filters
                     }
                 }
             }
-
-            var reader4 = new StreamReader(File.OpenRead(@"C:\Users\Altum Aerospace\Documents\Andrés Lastra\Altum\Filtros\App\Bad Companies.txt")); // BAD COMPANIES
+            string fd = MomPath + @"\Settings\Bad Companies.txt";
+            var reader4 = new StreamReader(File.OpenRead(fd)); // BAD COMPANIES
             while (!reader4.EndOfStream)
             {
                 string[] line2 = reader4.ReadLine().Split(',');
